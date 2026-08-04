@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Node
+node_modules/
+npm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Build output
+*.mp4
+*.wav
+*.mp3
+frames/
+screenshots/
+final.html
+draft.html
+.video_temp/
+.build_temp/
+pages/
+timeline.json
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.*

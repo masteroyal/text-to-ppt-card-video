@@ -1,0 +1,116 @@
+{
+  "title": "2026 年度产品路线图",
+  "theme": "editorial",
+  "tts_engine": "edge",
+  "voice": "YunxiNeural",
+  "aspect_ratio": "3:4",
+  "rate": "+0%",
+  "pitch": "+0Hz",
+  "brand": {
+    "name": "Text-to-PPT-Card-Video",
+    "sub": "产品路线图"
+  },
+  "pages": [
+    {
+      "type": "cover",
+      "title": "2026 年度产品路线图",
+      "subtitle": "TTS 配音 + 时间轴动画 + 可选 MP4 导出",
+      "tags": "产品路线图 / 文本转视频 / 开源",
+      "firm": "masteroyal",
+      "label": "产品 / 总览",
+      "meta": ["2026", "v3.4"],
+      "narration": [
+        {
+          "text": "这是 2026 年度产品路线图的封面，我们先从核心能力开始。",
+          "elements": ["cover-title", "cover-subtitle"]
+        },
+        {
+          "text": "页面元素会按旁白时间轴依次出现，不需要手动翻页。",
+          "elements": ["cover-tags", "cover-footer"]
+        }
+      ]
+    },
+    {
+      "type": "content",
+      "title": "核心能力",
+      "subtitle": "从文本到成片",
+      "series": "Text-to-PPT-Card-Video",
+      "page_num": "1/2",
+      "category": "功能",
+      "breadcrumb": "首页 / 功能",
+      "sections": [
+        {
+          "heading": "三步完成",
+          "heading_id": "s1-heading",
+          "components": [
+            {
+              "type": "exec",
+              "id": "s1-exec",
+              "text": "写入文本 → 生成旁白 → 输出 HTML 或 MP4。"
+            },
+            {
+              "type": "list",
+              "id": "s1-list",
+              "items": ["12 套 lieflat 主题", "Edge / MOSS / CosyVoice / DashScope", "音画时间轴自动对齐"]
+            },
+            {
+              "type": "blockquote",
+              "id": "s1-quote",
+              "text": "页面元素按旁白时间轴依次出现。"
+            }
+          ]
+        }
+      ],
+      "narration": [
+        {
+          "text": "三步完成：写入文本，生成旁白，输出成品。",
+          "elements": ["s1-heading"]
+        },
+        {
+          "text": "支持多套主题和多种语音引擎。",
+          "elements": ["s1-exec", "s1-list"]
+        },
+        {
+          "text": "页面元素按旁白时间轴依次出现。",
+          "elements": ["s1-quote"]
+        }
+      ]
+    },
+    {
+      "type": "content",
+      "title": "开始体验",
+      "subtitle": "开源可用",
+      "series": "Text-to-PPT-Card-Video",
+      "page_num": "2/2",
+      "category": "下一步",
+      "breadcrumb": "首页 / 下一步",
+      "sections": [
+        {
+          "heading": "快速对比",
+          "heading_id": "s2-heading",
+          "components": [
+            {
+              "type": "grid",
+              "id": "s2-grid",
+              "items": [
+                {"label": "输出", "text": "HTML / MP4", "dark": true},
+                {"label": "依赖", "text": "Python + Node + FFmpeg"},
+                {"label": "许可", "text": "MIT"}
+              ]
+            }
+          ]
+        }
+      ],
+      "narration": [
+        {
+          "text": "快速对比：输出格式、运行依赖和许可证。",
+          "elements": ["s2-heading"]
+        },
+        {
+          "text": "项目以 MIT 协议开源。",
+          "elements": ["s2-grid"]
+        }
+      ]
+    }
+  ]
+}

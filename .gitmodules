@@ -1,0 +1,8 @@
+# text-to-ppt-card-video 的子模块配置。
+# 当 tts_engine 为 cosyvoice 或 moss 时，由 scripts/build.py 调用。
+[submodule "scripts/cosyvoice"]
+	path = scripts/cosyvoice
+	url = https://github.com/FunAudioLLM/CosyVoice.git
+[submodule "scripts/moss-tts-nano"]
+	path = scripts/moss-tts-nano
+	url = https://github.com/OpenMOSS/MOSS-TTS-Nano.git

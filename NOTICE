@@ -1,0 +1,24 @@
+Text-to-PPT-Card-Video 第三方组件声明
+=====================================
+
+本项目使用了以下第三方组件。除 lieflat-html-design 外，其余组件均通过 git submodule、pip 或 npm 引用，不直接复制源码到本仓库。
+
+1. Lieflat 卡片样式模板
+   来源：https://github.com/larashero3-dotcom/lieflat-html-design
+   说明：主题 CSS 和卡片布局参考自该项目的 MIT 模板，版权和许可信息以原仓库为准。
+
+2. CosyVoice
+   来源：https://github.com/FunAudioLLM/CosyVoice
+   说明：以 git submodule 形式引用在 `scripts/cosyvoice/`，版权和许可信息以原仓库为准。
+
+3. MOSS-TTS-Nano
+   来源：https://github.com/OpenMOSS/MOSS-TTS-Nano
+   说明：以 git submodule 形式引用在 `scripts/moss-tts-nano/`，版权和许可信息以原仓库为准。
+
+4. Edge TTS
+   来源：https://github.com/rany2/edge-tts
+   说明：默认联网 TTS 引擎，通过 pip 安装，不随本仓库分发，版权和许可信息以原仓库为准。
+
+5. Puppeteer
+   来源：https://github.com/puppeteer/puppeteer
+   说明：通过 npm 安装，用于视频录制，版权和许可信息以原仓库为准。
