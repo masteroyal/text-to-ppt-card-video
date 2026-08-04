@@ -1,0 +1,3 @@
+# Local TTS model downloads for MOSS-TTS-Nano and CosyVoice.
+huggingface_hub
+modelscope
