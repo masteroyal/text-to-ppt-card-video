@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Python syntax
+        run: python -m py_compile scripts/build.py scripts/gen_draft.py scripts/split_pages.py scripts/cosyvoice_engine.py scripts/moss_tts_engine.py scripts/setup_local_tts.py scripts/tts_common.py scripts/check.py scripts/themes.py
+      - name: Unit tests
+        run: python -m unittest discover -s scripts/tests -v
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install Node dependencies
+        run: npm ci
+        working-directory: scripts
+      - name: Node syntax
+        run: node --check scripts/record_video.js
