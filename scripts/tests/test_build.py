@@ -90,6 +90,20 @@ class BuildTest(unittest.TestCase):
                         tmp,
                     )
 
+    def test_no_narration_page_gets_static_duration(self):
+        async def fake_generate(*args, **kwargs):
+            return [[]]
+
+        with tempfile.TemporaryDirectory() as tmp:
+            with mock.patch("build.generate_all_segments", side_effect=fake_generate):
+                timeline = build.process_pages(
+                    [{"title": "P", "narration": []}],
+                    "YunxiNeural",
+                    tmp,
+                )
+        self.assertEqual(timeline["pages"][0]["duration"], build.STATIC_PAGE_SECONDS)
+        self.assertEqual(timeline["pages"][0]["audio_base64"], "")
+
     def test_cosyvoice_batch_failure_raises(self):
         with tempfile.TemporaryDirectory() as tmp:
             with mock.patch(

@@ -1,5 +1,6 @@
 import json
 import os
+import re
 import sys
 import tempfile
 import unittest
@@ -40,6 +41,14 @@ def cover_page(**overrides):
 
 
 class GenDraftTest(unittest.TestCase):
+    def test_safe_id_keeps_safe_chars(self):
+        self.assertEqual(gen_draft.safe_id("p1-s1-heading"), "p1-s1-heading")
+
+    def test_safe_id_hashes_non_ascii_input(self):
+        self.assertRegex(gen_draft.safe_id("章节标题"), r"^el-[0-9a-f]{10}$")
+        self.assertEqual(gen_draft.safe_id("章节标题"), gen_draft.safe_id("章节标题"))
+        self.assertNotEqual(gen_draft.safe_id("章节标题"), gen_draft.safe_id("组件"))
+
     def test_validate_manifest_reports_field_path(self):
         with self.assertRaisesRegex(ValueError, r"pages\[0\]\.title"):
             validate_manifest({"pages": [{"type": "cover"}]})
@@ -57,6 +66,82 @@ class GenDraftTest(unittest.TestCase):
         }
         with self.assertRaisesRegex(ValueError, r"pages\[0\]\.sections\[0\]\.components\[0\]\.type"):
             validate_manifest(manifest)
+
+    def test_validate_manifest_rejects_duplicate_ids(self):
+        manifest = {
+            "pages": [{
+                "type": "content",
+                "title": "P",
+                "sections": [{
+                    "heading": "H",
+                    "heading_id": "same",
+                    "components": [{"type": "exec", "id": "same", "text": "x"}],
+                }],
+            }]
+        }
+        with self.assertRaisesRegex(ValueError, "must be unique"):
+            validate_manifest(manifest)
+
+    def test_validate_manifest_rejects_bad_id_chars(self):
+        manifest = {
+            "pages": [{
+                "type": "content",
+                "title": "P",
+                "sections": [{
+                    "heading": "H",
+                    "heading_id": "has space",
+                    "components": [],
+                }],
+            }]
+        }
+        with self.assertRaisesRegex(ValueError, "must use only ASCII"):
+            validate_manifest(manifest)
+
+    def test_validate_manifest_rejects_unknown_narration_ref(self):
+        manifest = {
+            "pages": [{
+                "type": "content",
+                "title": "P",
+                "sections": [{
+                    "heading": "H",
+                    "heading_id": "h1",
+                    "components": [{"type": "exec", "id": "e1", "text": "x"}],
+                }],
+                "narration": [{"text": "hi", "elements": ["missing"]}],
+            }]
+        }
+        with self.assertRaisesRegex(ValueError, "references unknown id"):
+            validate_manifest(manifest)
+
+    def test_missing_ids_get_unique_fallbacks(self):
+        html = render({
+            "title": "T",
+            "theme": "consulting-report",
+            "pages": [{
+                "type": "content",
+                "title": "P",
+                "subtitle": "S",
+                "series": "X",
+                "page_num": "1/1",
+                "category": "C",
+                "breadcrumb": "B",
+                "sections": [{
+                    "heading": "H",
+                    "components": [
+                        {"type": "exec", "text": "a"},
+                        {"type": "exec", "text": "b"},
+                    ],
+                }],
+                "narration": [],
+            }],
+        })
+        ids = re.findall(r'id="([^"]+)"', html)
+        self.assertEqual(len(ids), len(set(ids)))
+
+    def test_player_uses_wall_clock_for_pages_without_audio(self):
+        html = render({"title": "T", "theme": "consulting-report", "pages": [cover_page()]})
+        self.assertIn("var pageStartTime", html)
+        self.assertIn("performance.now() - pageStartTime", html)
 
     def test_table_uses_status_class(self):
         html = render({

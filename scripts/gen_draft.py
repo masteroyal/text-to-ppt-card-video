@@ -9,6 +9,7 @@ Reads manifest.json from output_dir, generates draft.html with dynamic
 card dimensions based on aspect_ratio field.
 """
 import html
+import hashlib
 import json
 import os
 import re
@@ -32,12 +33,42 @@ def esc(text):
 
 
 def safe_id(text):
-    """Keep element ids to a safe, simple character set."""
-    value = re.sub(r"[^A-Za-z0-9_-]", "", str(text))
-    return value or "el"
+    """Return a DOM-safe id, hashing empty or non-ASCII input deterministically."""
+    raw = str(text)
+    cleaned = re.sub(r"[^A-Za-z0-9_-]", "", raw)
+    if cleaned:
+        return cleaned
+    digest = hashlib.sha1(raw.encode("utf-8")).hexdigest()[:10]
+    return f"el-{digest}"
 
 
 COMPONENT_TYPES = {"exec", "paragraph", "blockquote", "metrics", "table", "list", "grid"}
+ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]+$")
+COVER_IDS = ("cover-title", "cover-subtitle", "cover-label", "cover-tags", "cover-footer")
+
+
+def _register_id(id_value, path, seen):
+    """Validate one manifest id and add it to the global seen set."""
+    if not isinstance(id_value, str) or not id_value:
+        raise ValueError(f"{path} must be a non-empty string")
+    if not ID_PATTERN.match(id_value):
+        raise ValueError(f"{path} must use only ASCII letters, digits, '-' and '_'")
+    if id_value in seen:
+        raise ValueError(
+            f"{path} repeats id {id_value!r}; ids must be unique across the whole manifest"
+        )
+    seen.add(id_value)
+
+
+def _validate_narration_refs(narration, page_ids, path):
+    """Check that every narration element id exists on its page."""
+    for ni, seg in enumerate(narration):
+        for ei, eid in enumerate(seg.get("elements", [])):
+            ref_path = f"{path}.narration[{ni}].elements[{ei}]"
+            if not isinstance(eid, str) or not eid:
+                raise ValueError(f"{ref_path} must be a non-empty string")
+            if eid not in page_ids:
+                raise ValueError(f"{ref_path} references unknown id {eid!r}")
 
 
 def validate_manifest(manifest):
@@ -48,6 +79,7 @@ def validate_manifest(manifest):
     if not isinstance(pages, list):
         raise ValueError("manifest pages must be a list")
 
+    seen_ids = set()
     for pi, page in enumerate(pages):
         path = f"pages[{pi}]"
         if not isinstance(page, dict):
@@ -70,11 +102,14 @@ def validate_manifest(manifest):
                 raise ValueError(f"{seg_path}.elements must be a list")
 
         if page["type"] == "cover":
+            for cid in COVER_IDS:
+                _register_id(cid, f"{path}.{cid}", seen_ids)
             for field in ("subtitle", "tags", "firm", "label"):
                 if not isinstance(page.get(field, ""), str):
                     raise ValueError(f"{path}.{field} must be a string")
             if not isinstance(page.get("meta", []), list):
                 raise ValueError(f"{path}.meta must be a list")
+            _validate_narration_refs(narration, set(COVER_IDS), path)
             continue
 
         for field in ("subtitle", "series", "page_num", "category", "breadcrumb"):
@@ -83,12 +118,16 @@ def validate_manifest(manifest):
         sections = page.get("sections", [])
         if not isinstance(sections, list):
             raise ValueError(f"{path}.sections must be a list")
+        page_ids = set()
         for si, sec in enumerate(sections):
             sec_path = f"{path}.sections[{si}]"
             if not isinstance(sec, dict):
                 raise ValueError(f"{sec_path} must be an object")
             if not isinstance(sec.get("heading"), str) or not sec["heading"]:
                 raise ValueError(f"{sec_path}.heading is required")
+            if "heading_id" in sec:
+                _register_id(sec["heading_id"], f"{sec_path}.heading_id", seen_ids)
+                page_ids.add(sec["heading_id"])
             components = sec.get("components", [])
             if not isinstance(components, list):
                 raise ValueError(f"{sec_path}.components must be a list")
@@ -101,6 +140,9 @@ def validate_manifest(manifest):
                     raise ValueError(
                         f"{comp_path}.type must be one of {sorted(COMPONENT_TYPES)}"
                     )
+                if "id" in comp:
+                    _register_id(comp["id"], f"{comp_path}.id", seen_ids)
+                    page_ids.add(comp["id"])
                 if comp_type in ("exec", "paragraph", "blockquote"):
                     if not isinstance(comp.get("text"), str) or not comp["text"]:
                         raise ValueError(f"{comp_path}.text is required")
@@ -110,6 +152,7 @@ def validate_manifest(manifest):
                 elif comp_type == "table":
                     if not isinstance(comp.get("rows"), list):
                         raise ValueError(f"{comp_path}.rows must be a list")
+        _validate_narration_refs(narration, page_ids, path)
 
 
 def main():
@@ -305,16 +348,16 @@ li{{font-size:16px;line-height:1.55;color:#333;margin-bottom:8px;font-weight:300
 ''')
         else:
             sections_html = []
-            for sec in page.get("sections", []):
-                sec_html = f'<h2 id="{safe_id(sec.get("heading_id", ""))}">{esc(sec["heading"])}</h2><div class="rule"></div>'
-                for comp in sec.get("components", []):
+            for si, sec in enumerate(page.get("sections", [])):
+                sec_html = f'<h2 id="{safe_id(sec.get("heading_id") or f"heading-{i}-{si}")}">{esc(sec["heading"])}</h2><div class="rule"></div>'
+                for ci, comp in enumerate(sec.get("components", [])):
                     ct = comp["type"]
                     if ct == "exec":
-                        sec_html += f'<div class="exec" id="{safe_id(comp.get("id", ""))}"><p>{esc(comp["text"])}</p></div>'
+                        sec_html += f'<div class="exec" id="{safe_id(comp.get("id") or f"{ct}-{i}-{si}-{ci}")}"><p>{esc(comp["text"])}</p></div>'
                     elif ct == "paragraph":
-                        sec_html += f'<p id="{safe_id(comp.get("id", ""))}">{esc(comp["text"])}</p>'
+                        sec_html += f'<p id="{safe_id(comp.get("id") or f"{ct}-{i}-{si}-{ci}")}">{esc(comp["text"])}</p>'
                     elif ct == "blockquote":
-                        sec_html += f'<blockquote id="{safe_id(comp.get("id", ""))}">{esc(comp["text"])}</blockquote>'
+                        sec_html += f'<blockquote id="{safe_id(comp.get("id") or f"{ct}-{i}-{si}-{ci}")}">{esc(comp["text"])}</blockquote>'
                     elif ct == "metrics":
                         items_html = ""
                         for item in comp.get("items", []):
@@ -323,7 +366,7 @@ li{{font-size:16px;line-height:1.55;color:#333;margin-bottom:8px;font-weight:300
                                 f'<span>{esc(item.get("value", ""))}</span>'
                                 f'<small>{esc(item.get("desc", ""))}</small></div>'
                             )
-                        sec_html += f'<div class="metrics" id="{safe_id(comp.get("id", ""))}">{items_html}</div>'
+                        sec_html += f'<div class="metrics" id="{safe_id(comp.get("id") or f"{ct}-{i}-{si}-{ci}")}">{items_html}</div>'
                     elif ct == "table":
                         rows_html = ""
                         for row in comp.get("rows", []):
@@ -335,12 +378,12 @@ li{{font-size:16px;line-height:1.55;color:#333;margin-bottom:8px;font-weight:300
                                 f'<span>{esc(row.get("value", ""))}</span>'
                                 f'<em class="{status_class}">{esc(row.get("status", ""))}</em></div>'
                             )
-                        sec_html += f'<div class="table" id="{safe_id(comp.get("id", ""))}">{rows_html}</div>'
+                        sec_html += f'<div class="table" id="{safe_id(comp.get("id") or f"{ct}-{i}-{si}-{ci}")}">{rows_html}</div>'
                     elif ct == "list":
                         items_html = ""
                         for item in comp.get("items", []):
                             items_html += f'<li>{esc(item)}</li>'
-                        sec_html += f'<ul id="{safe_id(comp.get("id", ""))}">{items_html}</ul>'
+                        sec_html += f'<ul id="{safe_id(comp.get("id") or f"{ct}-{i}-{si}-{ci}")}">{items_html}</ul>'
                     elif ct == "grid":
                         cells_html = ""
                         for item in comp.get("items", []):
@@ -351,7 +394,7 @@ li{{font-size:16px;line-height:1.55;color:#333;margin-bottom:8px;font-weight:300
                                 cells_html += f'<div class="{cell_class}"><b>{esc(label)}</b><span>{esc(text)}</span></div>'
                             else:
                                 cells_html += f'<div class="cell"><span>{esc(item)}</span></div>'
-                        sec_html += f'<div class="grid" id="{safe_id(comp.get("id", ""))}">{cells_html}</div>'
+                        sec_html += f'<div class="grid" id="{safe_id(comp.get("id") or f"{ct}-{i}-{si}-{ci}")}">{cells_html}</div>'
                 sections_html.append(sec_html)
 
             body_content = "\n          ".join(sections_html)
@@ -423,6 +466,7 @@ var AUDIO_SRC = [
   var isPlaying = false;
   var triggered = {{}};
   var rafId = null;
+  var pageStartTime = 0;
 
   /* Expose to window for external control (e.g. record_video.js) */
   window.__lf = {{ triggered: triggered }};
@@ -520,6 +564,7 @@ var AUDIO_SRC = [
     if (isPlaying) return;
     isPlaying = true;
     btnPlay.innerHTML = '&#9646;&#9646;';
+    pageStartTime = performance.now();
     audio.play().catch(function() {{}});
     tick();
   }}
@@ -539,8 +584,9 @@ var AUDIO_SRC = [
 
   function tick() {{
     if (!isPlaying) return;
-    var t = audio.currentTime;
     var pd = TIMELINE && TIMELINE.pages ? TIMELINE.pages[currentPage] : null;
+    var hasAudio = pd && !!pd.audio_base64;
+    var t = hasAudio ? audio.currentTime : ((performance.now() - pageStartTime) / 1000);
     if (pd) {{
       pd.segments.forEach(function(seg, si) {{
         if (t >= seg.start - ELEMENT_LEAD && !(triggered[currentPage] || {{}})[si]) {{

@@ -1,5 +1,4 @@
 # Base dependencies for the HTML build pipeline.
 edge-tts>=6.1.0
-dashscope>=1.20.0
 
 # Optional local TTS model downloads: see requirements-optional.txt

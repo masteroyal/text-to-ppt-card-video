@@ -4,7 +4,7 @@ description: >-
   把文本变成带旁白和动画的 PPT 卡片演示，可输出单文件 HTML，也可导出 MP4。
   支持 12 套 lieflat 主题和 Edge TTS、MOSS-TTS-Nano、CosyVoice、DashScope
   四种 TTS 引擎。用户需要生成演示文稿、卡片视频或带旁白的 HTML 时使用。
-version: 3.4.1
+version: 3.4.2
 ---
 
 # text-to-ppt-card-video
@@ -219,7 +219,7 @@ node {skill_dir}/scripts/record_video.js {output_dir}/pages {output_dir}/{projec
 }
 ```
 
-`elements` 里的 ID 必须真实存在于对应页面中。ID 在整份 HTML 里必须唯一，不能在不同页面重复使用 `s1-heading` 这类名字。
+`elements` 里的 ID 必须真实存在于对应页面中。ID 在整份 HTML 里必须唯一，不能在不同页面重复使用 `s1-heading` 这类名字。ID 只使用字母、数字、连字符和下划线；中文、空值或重复 ID 会在生成草稿时直接报错，旁白里引用不存在的 ID 也会被校验拦截。
 
 ## 内容与旁白写法
 
@@ -327,7 +327,7 @@ p1-s1-list
 p2-s1-grid
 ```
 
-如果只写 `s1-heading`，就必须保证整份演示里没有第二个 `s1-heading`。重复 ID 会导致元素只触发第一处，视频里容易出现看起来没动画的页面。
+如果只写 `s1-heading`，就必须保证整份演示里没有第二个 `s1-heading`。生成草稿时会校验 ID 唯一性和旁白引用，重复 ID 会导致构建直接报错。
 
 ## 主题
 

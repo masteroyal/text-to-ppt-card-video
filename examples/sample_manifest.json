@@ -1,5 +1,5 @@
 {
-  "title": "2026 年度产品路线图",
+  "title": "山岚咖啡 2026 年春季上新方案",
   "theme": "editorial",
   "tts_engine": "edge",
   "voice": "YunxiNeural",
@@ -7,95 +7,64 @@
   "rate": "+0%",
   "pitch": "+0Hz",
   "brand": {
-    "name": "Text-to-PPT-Card-Video",
-    "sub": "产品路线图"
+    "name": "山岚咖啡",
+    "sub": "市场部"
   },
   "pages": [
     {
       "type": "cover",
-      "title": "2026 年度产品路线图",
-      "subtitle": "TTS 配音 + 时间轴动画 + 可选 MP4 导出",
-      "tags": "产品路线图 / 文本转视频 / 开源",
-      "firm": "masteroyal",
-      "label": "产品 / 总览",
-      "meta": ["2026", "v3.4"],
+      "title": "山岚咖啡 2026 年春季上新方案",
+      "subtitle": "新品定位、上市节奏与首月目标",
+      "tags": "春季上新 / 市场方案 / 门店",
+      "firm": "山岚咖啡 · 市场部",
+      "label": "市场 / 方案",
+      "meta": ["2026 春季", "内部讨论稿"],
       "narration": [
         {
-          "text": "这是 2026 年度产品路线图的封面，我们先从核心能力开始。",
+          "text": "这份方案讲的是春季新品的定位和上市节奏，先看整体思路。",
           "elements": ["cover-title", "cover-subtitle"]
         },
         {
-          "text": "页面元素会按旁白时间轴依次出现，不需要手动翻页。",
+          "text": "接下来分两部分展开：新品定位和门店落地。",
           "elements": ["cover-tags", "cover-footer"]
         }
       ]
     },
     {
       "type": "content",
-      "title": "核心能力",
-      "subtitle": "从文本到成片",
-      "series": "Text-to-PPT-Card-Video",
+      "title": "新品定位",
+      "subtitle": "做一杯更有记忆点的日常咖啡",
+      "series": "山岚咖啡 2026 春季上新",
       "page_num": "1/2",
-      "category": "功能",
-      "breadcrumb": "首页 / 功能",
+      "category": "定位",
+      "breadcrumb": "首页 / 定位",
       "sections": [
         {
-          "heading": "三步完成",
-          "heading_id": "s1-heading",
+          "heading": "核心结论",
+          "heading_id": "p1-s1-heading",
           "components": [
             {
               "type": "exec",
-              "id": "s1-exec",
-              "text": "写入文本 → 生成旁白 → 输出 HTML 或 MP4。"
+              "id": "p1-s1-exec",
+              "text": "春季主打“山岚青提冷萃”，用门店现制感和清爽风味切入通勤人群。"
             },
             {
-              "type": "list",
-              "id": "s1-list",
-              "items": ["12 套 lieflat 主题", "Edge / MOSS / CosyVoice / DashScope", "音画时间轴自动对齐"]
-            },
-            {
-              "type": "blockquote",
-              "id": "s1-quote",
-              "text": "页面元素按旁白时间轴依次出现。"
-            }
-          ]
-        }
-      ],
-      "narration": [
-        {
-          "text": "三步完成：写入文本，生成旁白，输出成品。",
-          "elements": ["s1-heading"]
-        },
-        {
-          "text": "支持多套主题和多种语音引擎。",
-          "elements": ["s1-exec", "s1-list"]
-        },
-        {
-          "text": "页面元素按旁白时间轴依次出现。",
-          "elements": ["s1-quote"]
-        }
-      ]
-    },
-    {
-      "type": "content",
-      "title": "开始体验",
-      "subtitle": "开源可用",
-      "series": "Text-to-PPT-Card-Video",
-      "page_num": "2/2",
-      "category": "下一步",
-      "breadcrumb": "首页 / 下一步",
-      "sections": [
-        {
-          "heading": "快速对比",
-          "heading_id": "s2-heading",
-          "components": [
-            {
-              "type": "grid",
-              "id": "s2-grid",
+              "type": "metrics",
+              "id": "p1-s1-metrics",
               "items": [
-                {"label": "输出", "text": "HTML / MP4", "dark": true},
-                {"label": "依赖", "text": "Python + Node + FFmpeg"},
-                {"label": "许可", "text": "MIT"}
+                {"label": "目标客群", "value": "18-35", "desc": "通勤与校园人群"},
+                {"label": "上架门店", "value": "42 家", "desc": "首批直营门店"},
+                {"label": "价格带", "value": "16-22 元", "desc": "与常规菜单接近"},
+                {"label": "首月目标", "value": "9.8 万杯", "desc": "占当月饮品销量 12%"}
+              ]
+            },
+            {
+              "type": "table",
+              "id": "p1-s1-table",
+              "rows": [
+                {"label": "风味", "value": "青提果肉 + 冷萃咖啡", "status": "确定", "status_class": "status"},
+                {"label": "命名", "value": "山岚青提冷萃", "status": "确定", "status_class": "status"},
+                {"label": "杯型", "value": "中杯 / 大杯", "status": "评估中", "status_class": "status-red"}
               ]
             }
           ]
@@ -103,12 +72,61 @@
       ],
       "narration": [
         {
-          "text": "快速对比：输出格式、运行依赖和许可证。",
-          "elements": ["s2-heading"]
+          "text": "核心结论一句话：春季主打山岚青提冷萃，用门店现制感和清爽风味切入通勤人群。",
+          "elements": ["p1-s1-heading", "p1-s1-exec"]
         },
         {
-          "text": "项目以 MIT 协议开源。",
-          "elements": ["s2-grid"]
+          "text": "首批上架 42 家直营门店，价格带控制在 16 到 22 元，首月目标九万八千杯。",
+          "elements": ["p1-s1-metrics"]
+        },
+        {
+          "text": "风味和命名已经确定，杯型还在评估中。",
+          "elements": ["p1-s1-table"]
+        }
+      ]
+    },
+    {
+      "type": "content",
+      "title": "上市节奏",
+      "subtitle": "两周预热，三周铺开",
+      "series": "山岚咖啡 2026 春季上新",
+      "page_num": "2/2",
+      "category": "节奏",
+      "breadcrumb": "首页 / 节奏",
+      "sections": [
+        {
+          "heading": "时间安排",
+          "heading_id": "p2-s1-heading",
+          "components": [
+            {
+              "type": "list",
+              "id": "p2-s1-list",
+              "items": [
+                "第一周：内部试饮与门店培训",
+                "第二周：线上预告与社群抽奖",
+                "第三周：全门店上架与首日赠饮"
+              ]
+            },
+            {
+              "type": "grid",
+              "id": "p2-s1-grid",
+              "items": [
+                {"label": "物料", "text": "杯套、海报、小程序 Banner", "dark": true},
+                {"label": "门店", "text": "42 家直营店同步上架"},
+                {"label": "复盘", "text": "首周销量与复购率周报"}
+              ]
+            }
+          ]
+        }
+      ],
+      "narration": [
+        {
+          "text": "上市节奏分三步：先内部试饮和培训，再线上预告，最后全门店同步上架。",
+          "elements": ["p2-s1-heading", "p2-s1-list"]
+        },
+        {
+          "text": "物料和门店动作已经排好，首周结束出销量和复购率周报。",
+          "elements": ["p2-s1-grid"]
         }
       ]
     }

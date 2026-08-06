@@ -47,6 +47,9 @@ from tts_common import (
 # ── Segment gap (silence between narration segments) ────────────────
 SEGMENT_GAP = 0.6  # seconds
 
+# Static hold time for pages without narration, in seconds.
+STATIC_PAGE_SECONDS = 2.0
+
 
 def log(msg):
     print(f"[text-to-ppt-card-video] {msg}", flush=True)
@@ -348,7 +351,7 @@ def process_pages(pages, voice, tmp_dir, rate="+0%", pitch="+0Hz", tts_engine="e
         if not narration:
             timeline["pages"].append({
                 "audio_base64": "",
-                "duration": 0,
+                "duration": STATIC_PAGE_SECONDS,
                 "segments": []
             })
             continue
