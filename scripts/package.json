@@ -1,16 +1,30 @@
 {
   "name": "text-to-ppt-card-video-scripts",
-  "version": "1.0.0",
-  "description": "Text-to-PPT-Card-Video build pipeline scripts",
+  "version": "1.0.1",
+  "description": "Build narrated PPT-card HTML decks and export them as MP4 videos.",
   "main": "record_video.js",
   "engines": {
     "node": ">=22.12.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/masteroyal/text-to-ppt-card-video.git"
+  },
+  "bugs": {
+    "url": "https://github.com/masteroyal/text-to-ppt-card-video/issues"
+  },
+  "homepage": "https://github.com/masteroyal/text-to-ppt-card-video#readme",
   "scripts": {
     "test": "node --check record_video.js"
   },
-  "keywords": ["text-to-ppt-card-video", "tts", "html-presentation", "video"],
-  "author": "",
+  "keywords": [
+    "text-to-ppt-card-video",
+    "tts",
+    "html-presentation",
+    "video",
+    "puppeteer"
+  ],
+  "author": "masteroyal <raoyiliu0620@qq.com>",
   "license": "MIT",
   "type": "commonjs",
   "dependencies": {

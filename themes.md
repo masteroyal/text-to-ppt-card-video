@@ -1,6 +1,7 @@
 # Lieflat 主题 CSS 参考
 
 > Text-to-PPT-Card-Video 的主题 CSS 参考，包含全部 12 套 lieflat 主题。
+> 主题 CSS 与卡片布局参考 [lieflat-html-design](https://github.com/larashero3-dotcom/lieflat-html-design)（MIT），版权和许可信息以原仓库为准。
 > `gen_draft.py` 通过 `scripts/themes.py` 按 manifest 的 `theme` 字段读取对应主题。
 
 ---
@@ -824,7 +825,7 @@ mark{background:linear-gradient(90deg,rgba(255,105,180,.2),rgba(0,212,255,.2));c
 动画由播放引擎按音频时间轴驱动：音频到达每段旁白的开始时间后，引擎给对应元素加上 `.visible`。元素初始隐藏由 `initElements()` 设置内联 `opacity:0`，不要再用 `.page:not(.in-view)` 这类规则控制显隐。
 
 ```css
-/* ── Base transition for all animatable elements ── */
+/* -- Base transition for all animatable elements -- */
 .cover > *,
 #cover-label, #cover-title, #cover-subtitle,
 #cover-tags, #cover-footer,
@@ -840,7 +841,7 @@ mark{background:linear-gradient(90deg,rgba(255,105,180,.2),rgba(0,212,255,.2));c
               transform .75s cubic-bezier(.22,1,.36,1);
 }
 
-/* ── When .visible is added by timeline JS ── */
+/* -- When .visible is added by timeline JS -- */
 .cover > *.visible,
 #cover-label.visible, #cover-title.visible, #cover-subtitle.visible,
 #cover-tags.visible, #cover-footer.visible,
@@ -849,7 +850,7 @@ mark{background:linear-gradient(90deg,rgba(255,105,180,.2),rgba(0,212,255,.2));c
   transform: translateY(0) !important;
 }
 
-/* ── Keyframes for staggered children ── */
+/* -- Keyframes for staggered children -- */
 @keyframes fadeUp         { from { opacity:0; transform:translateY(24px) } to { opacity:1; transform:translateY(0) } }
 @keyframes slideFromLeft  { from { opacity:0; transform:translateX(-40px) } to { opacity:1; transform:translateX(0) } }
 @keyframes slideFromRight { from { opacity:0; transform:translateX(40px) } to { opacity:1; transform:translateX(0) } }
@@ -857,7 +858,7 @@ mark{background:linear-gradient(90deg,rgba(255,105,180,.2),rgba(0,212,255,.2));c
 @keyframes clipWipe       { from { opacity:0; clip-path:inset(0 100% 0 0) } to { opacity:1; clip-path:inset(0 0 0 0) } }
 @keyframes emphasize      { 0% { opacity:0; transform:translateY(14px) scale(.97) } 50% { opacity:1; transform:translateY(0) scale(1.02) } 100% { opacity:1; transform:scale(1) } }
 
-/* ── Staggered children: list items ── */
+/* -- Staggered children: list items -- */
 .visible li,
 .visible .row {
   opacity: 0;
@@ -869,7 +870,7 @@ mark{background:linear-gradient(90deg,rgba(255,105,180,.2),rgba(0,212,255,.2));c
 .visible li:nth-child(4), .visible .row:nth-child(4) { animation-delay: .36s }
 .visible li:nth-child(5), .visible .row:nth-child(5) { animation-delay: .48s }
 
-/* ── Alternate table row directions ── */
+/* -- Alternate table row directions -- */
 .visible .row:nth-child(odd)  { animation-name: slideFromLeft }
 .visible .row:nth-child(even) { animation-name: slideFromRight }
 ```

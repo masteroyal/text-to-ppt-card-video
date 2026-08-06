@@ -1,15 +1,6 @@
----
-name: text-to-ppt-card-video
-description: >-
-  把文本变成带旁白和动画的 PPT 卡片演示，可输出单文件 HTML，也可导出 MP4。
-  支持 12 套 lieflat 主题和 Edge TTS、MOSS-TTS-Nano、CosyVoice、DashScope
-  四种 TTS 引擎。用户需要生成演示文稿、卡片视频或带旁白的 HTML 时使用。
-version: 1.0.0
----
+# manifest.json 与使用说明
 
-# text-to-ppt-card-video
-
-这个 skill 根据 `manifest.json` 生成多页 PPT 卡片演示。默认产物是单文件 HTML，样式、脚本和 TTS 旁白全部内嵌；浏览器打开后会按旁白时间轴自动播放，每页元素随语音逐段出现。需要成片时，再用同一份内容导出 MP4。
+这个项目根据 `manifest.json` 生成多页 PPT 卡片演示。默认产物是单文件 HTML，样式、脚本和 TTS 旁白全部内嵌；浏览器打开后会按旁白时间轴自动播放，每页元素随语音逐段出现。需要成片时，再用同一份内容导出 MP4。
 
 ## 产物说明
 
@@ -33,8 +24,8 @@ version: 1.0.0
 - 首次使用时安装依赖：
 
 ```bash
-pip install -r {skill_dir}/scripts/requirements.txt
-cd {skill_dir}/scripts && npm install
+pip install -r scripts/requirements.txt
+cd scripts && npm install
 ```
 
 `npm install` 会由 Puppeteer 自动下载 Chromium。Puppeteer 25 要求 Node.js 22.12 以上。
@@ -42,13 +33,13 @@ cd {skill_dir}/scripts && npm install
 Edge TTS 联网即可使用，不需要额外模型。MOSS-TTS-Nano 和 CosyVoice 是本地引擎，首次使用前需要下载模型；模型较大，需要时再运行 setup 命令下载。
 
 ```bash
-pip install -r {skill_dir}/scripts/requirements-optional.txt
+pip install -r scripts/requirements-optional.txt
 ```
 
 ```bash
-python {skill_dir}/scripts/setup_local_tts.py --check
-python {skill_dir}/scripts/setup_local_tts.py --engine moss
-python {skill_dir}/scripts/setup_local_tts.py --engine cosyvoice
+python scripts/setup_local_tts.py --check
+python scripts/setup_local_tts.py --engine moss
+python scripts/setup_local_tts.py --engine cosyvoice
 ```
 
 ## 工作流程
@@ -57,7 +48,7 @@ python {skill_dir}/scripts/setup_local_tts.py --engine cosyvoice
 2. 生成草稿 HTML：
 
 ```bash
-python {skill_dir}/scripts/gen_draft.py {output_dir}
+python scripts/gen_draft.py ./output
 ```
 
 这一步根据 manifest 生成 `draft.html`，包含主题样式、卡片布局、播放引擎和音频占位符。
@@ -65,7 +56,7 @@ python {skill_dir}/scripts/gen_draft.py {output_dir}
 3. 合成旁白并生成最终 HTML：
 
 ```bash
-python {skill_dir}/scripts/build.py {output_dir}
+python scripts/build.py ./output
 ```
 
 这一步按 manifest 里的 `tts_engine` 生成旁白，计算每段音频的开始时间，把 base64 音频和时间轴写进 `draft.html`，输出 `final.html`。同时会生成 `timeline.json`，只包含页面时长和分段时间，不包含音频。
@@ -73,8 +64,8 @@ python {skill_dir}/scripts/build.py {output_dir}
 4. 用户需要视频时，先拆页，再录制：
 
 ```bash
-python {skill_dir}/scripts/split_pages.py {output_dir}
-node {skill_dir}/scripts/record_video.js {output_dir}/pages {output_dir}/{project}.mp4 [width] [height]
+python scripts/split_pages.py ./output
+node scripts/record_video.js ./output/pages ./output/video.mp4 [width] [height]
 ```
 
 `split_pages.py` 会把 `final.html` 拆成 `pages/page_N.html`，每页单独初始化播放状态。`record_video.js` 逐页录制后用 FFmpeg 拼接。宽高不传时默认 1080×1920；建议按卡片比例传，例如 3:4 用 1080×1440，16:9 用 1920×1080。宽高比不一致时会等比缩放并用黑边补齐。
@@ -374,8 +365,8 @@ p2-s1-grid
 代码仓库自带了 Python 单元测试和语法检查，改动脚本后可以运行：
 
 ```bash
-python -m unittest discover -s {skill_dir}/scripts/tests -v
-node --check {skill_dir}/scripts/record_video.js
+python -m unittest discover -s scripts/tests -v
+node --check scripts/record_video.js
 ```
 
 生成结果需要人工确认的点：

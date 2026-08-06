@@ -1,70 +1,70 @@
 {
-  "title": "山岚咖啡 2026 年春季上新方案",
-  "theme": "editorial",
+  "title": "8 月第一周门店周会",
+  "theme": "consulting-report",
   "tts_engine": "edge",
   "voice": "YunxiNeural",
   "aspect_ratio": "3:4",
   "rate": "+0%",
   "pitch": "+0Hz",
   "brand": {
-    "name": "山岚咖啡",
-    "sub": "市场部"
+    "name": "示例门店",
+    "sub": "运营周会"
   },
   "pages": [
     {
       "type": "cover",
-      "title": "山岚咖啡 2026 年春季上新方案",
-      "subtitle": "新品定位、上市节奏与首月目标",
-      "tags": "春季上新 / 市场方案 / 门店",
-      "firm": "山岚咖啡 · 市场部",
-      "label": "市场 / 方案",
-      "meta": ["2026 春季", "内部讨论稿"],
+      "title": "8 月第一周门店周会",
+      "subtitle": "客流、复购、新品试卖",
+      "tags": "运营周会 / 门店数据 / 复盘",
+      "firm": "示例门店 · 运营组",
+      "label": "周报 / 复盘",
+      "meta": ["2026.08.07", "内部材料"],
       "narration": [
         {
-          "text": "这份方案讲的是春季新品的定位和上市节奏，先看整体思路。",
+          "text": "这页把本周门店情况过一遍，先说客流，再说复购，最后看新品试卖。",
           "elements": ["cover-title", "cover-subtitle"]
         },
         {
-          "text": "接下来分两部分展开：新品定位和门店落地。",
+          "text": "后面两页分别放数据和下周安排。",
           "elements": ["cover-tags", "cover-footer"]
         }
       ]
     },
     {
       "type": "content",
-      "title": "新品定位",
-      "subtitle": "做一杯更有记忆点的日常咖啡",
-      "series": "山岚咖啡 2026 春季上新",
+      "title": "客流与复购",
+      "subtitle": "数据截止到周三",
+      "series": "示例门店 8 月周报",
       "page_num": "1/2",
-      "category": "定位",
-      "breadcrumb": "首页 / 定位",
+      "category": "数据",
+      "breadcrumb": "首页 / 客流与复购",
       "sections": [
         {
-          "heading": "核心结论",
+          "heading": "本周概况",
           "heading_id": "p1-s1-heading",
           "components": [
             {
               "type": "exec",
               "id": "p1-s1-exec",
-              "text": "春季主打“山岚青提冷萃”，用门店现制感和清爽风味切入通勤人群。"
+              "text": "客流比上周同期高 6%，复购率基本持平，新客占比略降。"
             },
             {
               "type": "metrics",
               "id": "p1-s1-metrics",
               "items": [
-                {"label": "目标客群", "value": "18-35", "desc": "通勤与校园人群"},
-                {"label": "上架门店", "value": "42 家", "desc": "首批直营门店"},
-                {"label": "价格带", "value": "16-22 元", "desc": "与常规菜单接近"},
-                {"label": "首月目标", "value": "9.8 万杯", "desc": "占当月饮品销量 12%"}
+                {"label": "客流", "value": "2,180", "desc": "上周同期 2,058"},
+                {"label": "复购率", "value": "38%", "desc": "上周 38.5%"},
+                {"label": "新客占比", "value": "21%", "desc": "上周 23%"},
+                {"label": "客单价", "value": "34 元", "desc": "与上周持平"}
               ]
             },
             {
               "type": "table",
               "id": "p1-s1-table",
               "rows": [
-                {"label": "风味", "value": "青提果肉 + 冷萃咖啡", "status": "确定", "status_class": "status"},
-                {"label": "命名", "value": "山岚青提冷萃", "status": "确定", "status_class": "status"},
-                {"label": "杯型", "value": "中杯 / 大杯", "status": "评估中", "status_class": "status-red"}
+                {"label": "高峰时段", "value": "工作日 8-9 点", "status": "正常", "status_class": "status"},
+                {"label": "午市", "value": "12-13 点", "status": "偏忙", "status_class": "status-red"},
+                {"label": "晚市", "value": "18-19 点", "status": "正常", "status_class": "status"}
               ]
             }
           ]
@@ -72,48 +72,48 @@
       ],
       "narration": [
         {
-          "text": "核心结论一句话：春季主打山岚青提冷萃，用门店现制感和清爽风味切入通勤人群。",
+          "text": "先说客流。本周前三天客流比上周同期高 6%，复购率基本持平，新客占比降了两个点。",
           "elements": ["p1-s1-heading", "p1-s1-exec"]
         },
         {
-          "text": "首批上架 42 家直营门店，价格带控制在 16 到 22 元，首月目标九万八千杯。",
+          "text": "具体数字都在这组指标里，客单价没有变化。",
           "elements": ["p1-s1-metrics"]
         },
         {
-          "text": "风味和命名已经确定，杯型还在评估中。",
+          "text": "高峰时段还是工作日早上和午市，午市人手偏紧。",
           "elements": ["p1-s1-table"]
         }
       ]
     },
     {
       "type": "content",
-      "title": "上市节奏",
-      "subtitle": "两周预热，三周铺开",
-      "series": "山岚咖啡 2026 春季上新",
+      "title": "新品与下周安排",
+      "subtitle": "试卖一周后的调整",
+      "series": "示例门店 8 月周报",
       "page_num": "2/2",
-      "category": "节奏",
-      "breadcrumb": "首页 / 节奏",
+      "category": "安排",
+      "breadcrumb": "首页 / 新品与下周安排",
       "sections": [
         {
-          "heading": "时间安排",
+          "heading": "试卖情况",
           "heading_id": "p2-s1-heading",
           "components": [
             {
               "type": "list",
               "id": "p2-s1-list",
               "items": [
-                "第一周：内部试饮与门店培训",
-                "第二周：线上预告与社群抽奖",
-                "第三周：全门店上架与首日赠饮"
+                "青提冷萃日均 26 杯，低于预期",
+                "反馈集中在偏甜和冰块太多",
+                "下周一调整糖度和配方"
               ]
             },
             {
               "type": "grid",
               "id": "p2-s1-grid",
               "items": [
-                {"label": "物料", "text": "杯套、海报、小程序 Banner", "dark": true},
-                {"label": "门店", "text": "42 家直营店同步上架"},
-                {"label": "复盘", "text": "首周销量与复购率周报"}
+                {"label": "试卖门店", "text": "3 家", "dark": true},
+                {"label": "下周动作", "text": "调配方、补店员排班"},
+                {"label": "复盘时间", "text": "下周四晚"}
               ]
             }
           ]
@@ -121,11 +121,11 @@
       ],
       "narration": [
         {
-          "text": "上市节奏分三步：先内部试饮和培训，再线上预告，最后全门店同步上架。",
+          "text": "新品试卖一周，日均 26 杯，比预期低。反馈主要是偏甜和冰块太多。",
           "elements": ["p2-s1-heading", "p2-s1-list"]
         },
         {
-          "text": "物料和门店动作已经排好，首周结束出销量和复购率周报。",
+          "text": "下周一调整配方，周四出复盘结论。",
           "elements": ["p2-s1-grid"]
         }
       ]
