@@ -19,9 +19,9 @@ import sys
 
 from tts_common import find_bin, find_cosyvoice_python
 
-SKILL_DIR = os.path.dirname(os.path.abspath(__file__))
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-MOSS_DIR = os.path.join(SKILL_DIR, "moss-tts-nano")
+MOSS_DIR = os.path.join(SCRIPT_DIR, "moss-tts-nano")
 MOSS_INFER = os.path.join(MOSS_DIR, "infer_onnx.py")
 MOSS_MODELS_DIR = os.path.join(MOSS_DIR, "models")
 MOSS_MODEL_DIRS = [
@@ -33,7 +33,7 @@ MOSS_REPOS = [
     "OpenMOSS-Team/MOSS-Audio-Tokenizer-Nano-ONNX",
 ]
 
-COSYVOICE_DIR = os.path.join(SKILL_DIR, "cosyvoice")
+COSYVOICE_DIR = os.path.join(SCRIPT_DIR, "cosyvoice")
 COSYVOICE_MODEL_DIR = os.path.join(COSYVOICE_DIR, "pretrained_models", "CosyVoice-300M-SFT")
 COSYVOICE_MODEL_FILES = [
     "flow.pt",

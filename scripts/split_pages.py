@@ -12,7 +12,7 @@ Usage:
     python split_pages.py <output_dir>
 
 Input (in output_dir):
-    final.html  — the built presentation from build.py
+    final.html  - the built presentation from build.py
 
 Output (in output_dir/pages/):
     page_0.html, page_1.html, ..., page_N.html
@@ -57,9 +57,14 @@ def main():
         sys.exit(1)
 
     audio_src_text = audio_src_match.group(1)
-    audio_entries = re.findall(
-        r'("(?:data:audio/mp3;base64,[A-Za-z0-9+/=]+|)")', audio_src_text
-    )
+    try:
+        audio_entries = json.loads(f"[{audio_src_text}]")
+    except json.JSONDecodeError as exc:
+        print(f"ERROR: cannot parse AUDIO_SRC as a JSON array: {exc}")
+        sys.exit(1)
+    if not all(isinstance(entry, str) for entry in audio_entries):
+        print("ERROR: AUDIO_SRC entries must all be strings")
+        sys.exit(1)
     print(f"Found {len(audio_entries)} AUDIO_SRC entries")
 
     if len(audio_entries) != len(pages_data):
@@ -128,7 +133,7 @@ def main():
         # Replace AUDIO_SRC with single entry
         result = re.sub(
             r'var\s+AUDIO_SRC\s*=\s*\[.*?\];',
-            f'var AUDIO_SRC = [{audio_entries[i]}];',
+            f'var AUDIO_SRC = [{json.dumps(audio_entries[i], ensure_ascii=False)}];',
             result, count=1, flags=re.DOTALL
         )
 

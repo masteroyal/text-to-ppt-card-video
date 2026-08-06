@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * record_video.js — Screenshot-based per-page HTML recording.
+ * record_video.js - Screenshot-based per-page HTML recording.
  *
  * Uses tab.screenshot() polling instead of CDP screencast to avoid
  * encoder backlog (6-8s frame delay). Elements are triggered from
@@ -68,17 +68,37 @@ async function main() {
   const width = parseInt(args[2]) || 1080;
   const height = parseInt(args[3]) || 1920;
 
-  // Find per-page HTML files
-  var pageFiles = [];
-  for (var i = 0; ; i++) {
-    var fp = path.join(pagesDir, 'page_' + i + '.html');
-    if (!fs.existsSync(fp)) break;
-    pageFiles.push(fp);
+  // Find per-page HTML files and require a contiguous sequence from page_0.
+  var pageNames;
+  try {
+    pageNames = fs.readdirSync(pagesDir).filter(function(name) {
+      return /^page_\d+\.html$/.test(name);
+    });
+  } catch (err) {
+    console.error('ERROR: cannot read pages dir ' + pagesDir + ': ' + err.message);
+    process.exit(1);
   }
 
-  if (pageFiles.length === 0) {
+  if (pageNames.length === 0) {
     console.error('ERROR: No page_*.html files found in ' + pagesDir);
     process.exit(1);
+  }
+
+  pageNames.sort(function(a, b) {
+    var ia = parseInt(a.match(/^page_(\d+)\.html$/)[1], 10);
+    var ib = parseInt(b.match(/^page_(\d+)\.html$/)[1], 10);
+    return ia - ib;
+  });
+
+  var pageFiles = [];
+  for (var i = 0; i < pageNames.length; i++) {
+    var match = pageNames[i].match(/^page_(\d+)\.html$/);
+    var idx = parseInt(match[1], 10);
+    if (idx !== pageFiles.length) {
+      console.error('ERROR: missing page_' + pageFiles.length + '.html in ' + pagesDir);
+      process.exit(1);
+    }
+    pageFiles.push(path.join(pagesDir, pageNames[i]));
   }
 
   console.log('[text-to-ppt-card-video] Recording video (screenshot-based)...');
@@ -164,7 +184,7 @@ async function main() {
       }
       console.log('  Crop: (' + cropRect.x + ',' + cropRect.y + ') ' + cropRect.width + 'x' + cropRect.height);
 
-      // ── Screenshot-based recording ──
+      // -- Screenshot-based recording --
 
       // ELEMENT_LEAD: trigger elements this many seconds before their audio segment.
       // 0.5s gives the 0.75s CSS opacity transition time to start fading in
@@ -219,7 +239,7 @@ async function main() {
         if (audio) audio.play().catch(function(e) { console.log('Play error:', e.message); });
       });
 
-      // ── Screenshot capture loop ──
+      // -- Screenshot capture loop --
       console.log('  Recording ' + pageDur.toFixed(1) + 's via screenshots at ' + TARGET_FPS + 'fps...');
       var t0 = Date.now();
       var triggeredSet = {};
@@ -308,7 +328,7 @@ async function main() {
         throw new Error('No screenshots captured for page ' + (pageIdx + 1));
       }
 
-      // Use TARGET_FPS for encoding — frames were captured at this uniform rate
+      // Use TARGET_FPS for encoding - frames were captured at this uniform rate
       console.log('  Encoding at ' + TARGET_FPS + ' fps (' + frameCount + ' frames = ' + (frameCount / TARGET_FPS).toFixed(1) + 's)');
 
       // Encode page video from screenshots (already cropped to card region)
@@ -336,11 +356,11 @@ async function main() {
       throw new Error('No page videos generated');
     }
 
-    // ── Combine audio from all page HTMLs ──
+    // -- Combine audio from all page HTMLs --
     console.log('[text-to-ppt-card-video] Preparing combined audio...');
     var audioPath = extractCombinedAudio(pageFiles, tempDir, pageDurations);
 
-    // ── Concatenate page videos ──
+    // -- Concatenate page videos --
     console.log('[text-to-ppt-card-video] Concatenating ' + pageVideos.length + ' page videos...');
     var concatList = path.join(tempDir, 'video_concat.txt');
     var concatContent = pageVideos.map(function(p) {

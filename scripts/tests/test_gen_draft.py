@@ -143,6 +143,42 @@ class GenDraftTest(unittest.TestCase):
         self.assertIn("var pageStartTime", html)
         self.assertIn("performance.now() - pageStartTime", html)
 
+    def test_controls_have_accessibility_labels(self):
+        html = render({"title": "T", "theme": "consulting-report", "pages": [cover_page()]})
+        self.assertIn('aria-label="\u4e0a\u4e00\u9875"', html)
+        self.assertIn('aria-label="\u4e0b\u4e00\u9875"', html)
+        self.assertIn('aria-label="\u64ad\u653e\u6216\u6682\u505c"', html)
+        self.assertIn(
+            "btn.setAttribute('aria-label', '\u7b2c ' + (i + 1) + ' \u9875');",
+            html,
+        )
+
+    def test_metric_uses_serif_variable(self):
+        html = render({
+            "title": "T",
+            "theme": "consulting-report",
+            "pages": [{
+                "type": "content",
+                "title": "P",
+                "subtitle": "S",
+                "series": "X",
+                "page_num": "1/1",
+                "category": "C",
+                "breadcrumb": "B",
+                "sections": [{
+                    "heading": "H",
+                    "heading_id": "s1-heading",
+                    "components": [{
+                        "type": "metrics",
+                        "id": "s1-metrics",
+                        "items": [{"label": "A", "value": "1", "desc": "x"}],
+                    }],
+                }],
+                "narration": [],
+            }],
+        })
+        self.assertIn("font-family:var(--serif);font-size:36px", html)
+
     def test_table_uses_status_class(self):
         html = render({
             "title": "T",

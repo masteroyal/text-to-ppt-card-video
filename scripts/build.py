@@ -2,18 +2,18 @@
 """
 text-to-ppt-card-video build.py
 ======================
-Reads manifest.json → generates Edge TTS audio per narration segment
-→ calculates precise timeline → injects base64 audio + timeline into HTML.
+Reads manifest.json -> generates Edge TTS audio per narration segment
+-> calculates precise timeline -> injects base64 audio + timeline into HTML.
 
 Usage:
     python build.py <output_dir>
 
 Input files (in output_dir):
-    manifest.json   — page content + narration scripts + element bindings
-    draft.html      — HTML with __AUDIO_N__ / __TIMELINE__ placeholders
+    manifest.json   - page content + narration scripts + element bindings
+    draft.html      - HTML with __AUDIO_N__ / __TIMELINE__ placeholders
 
 Output files (in output_dir):
-    final.html      — complete self-contained HTML with embedded audio
+    final.html      - complete self-contained HTML with embedded audio
 
 Requirements:
     pip install edge-tts
@@ -44,11 +44,14 @@ from tts_common import (
     find_cosyvoice_python,
 )
 
-# ── Segment gap (silence between narration segments) ────────────────
+# -- Segment gap (silence between narration segments) ----------------
 SEGMENT_GAP = 0.6  # seconds
 
 # Static hold time for pages without narration, in seconds.
 STATIC_PAGE_SECONDS = 2.0
+
+# Edge TTS can reject requests when too many are issued at once.
+EDGE_TTS_MAX_CONCURRENCY = 4
 
 
 def log(msg):
@@ -60,7 +63,7 @@ FFPROBE = find_bin("ffprobe") or "ffprobe"
 CONDA_PYTHON = find_cosyvoice_python() or "python"
 
 
-# ── TTS generation ──────────────────────────────────────────────────
+# -- TTS generation --------------------------------------------------
 
 async def generate_tts(text, voice, output_path, rate="+0%", pitch="+0Hz"):
     """Generate TTS audio for a single segment."""
@@ -78,26 +81,36 @@ async def generate_all_segments(pages, voice, tmp_dir, rate="+0%", pitch="+0Hz",
     if tts_engine == "dashscope":
         return _generate_all_segments_dashscope(pages, voice, tmp_dir, rate=rate, pitch=pitch)
 
+    sem = asyncio.Semaphore(EDGE_TTS_MAX_CONCURRENCY)
     tasks = []
+    task_labels = []
     paths = []
     for pi, page in enumerate(pages):
         page_paths = []
         for ni, seg in enumerate(page.get("narration", [])):
             out = os.path.join(tmp_dir, f"seg_{pi}_{ni}.mp3")
             page_paths.append(out)
-            tasks.append(generate_tts(seg["text"], voice, out, rate=rate, pitch=pitch))
+            task_labels.append(f"page {pi} segment {ni}")
+
+            async def limited(seg_text, voice_name, output_path, rate_value, pitch_value):
+                async with sem:
+                    await generate_tts(seg_text, voice_name, output_path, rate=rate_value, pitch=pitch_value)
+
+            tasks.append(limited(seg["text"], voice, out, rate, pitch))
         paths.append(page_paths)
 
     total = sum(len(p) for p in paths)
     log(f"Generating {total} TTS segments with engine=edge voice={voice} ...")
     results = await asyncio.gather(*tasks, return_exceptions=True)
-    failed = 0
+    errors = []
     for i, r in enumerate(results):
         if isinstance(r, Exception):
-            failed += 1
-            log(f"WARNING: TTS segment failed: {r}")
-    if failed:
-        log(f"WARNING: {failed}/{total} TTS segments failed")
+            errors.append(f"{task_labels[i]}: {r}")
+    if errors:
+        raise RuntimeError(
+            f"{len(errors)}/{total} TTS segments failed: "
+            + "; ".join(errors[:5])
+        )
     log(f"TTS generation complete.")
     return paths
 
@@ -194,7 +207,7 @@ def _generate_all_segments_cosyvoice(pages, voice, tmp_dir):
     return paths
 
 
-# ── DashScope CosyVoice API TTS ─────────────────────────────────────
+# -- DashScope CosyVoice API TTS -------------------------------------
 
 def _dashscope_tts_single(text, voice, output_path, api_key, model):
     """Call DashScope CosyVoice API via Python SDK to synthesize a single segment."""
@@ -246,7 +259,7 @@ def _generate_all_segments_dashscope(pages, voice, tmp_dir, rate="+0%", pitch="+
     return paths
 
 
-# ── Audio duration ──────────────────────────────────────────────────
+# -- Audio duration --------------------------------------------------
 
 def get_duration(path):
     """Get audio duration in seconds using ffprobe."""
@@ -258,12 +271,12 @@ def get_duration(path):
     try:
         return float(result.stdout.strip())
     except (ValueError, AttributeError):
-        # Fallback: estimate from file size (~24KB/s for 192kbps MP3)
+        # Fallback: estimate duration from file size (192 kbps MP3).
         size = os.path.getsize(path)
         return size / 24000.0
 
 
-# ── Generate silence ────────────────────────────────────────────────
+# -- Generate silence ------------------------------------------------
 
 def generate_silence(duration, output_path, sample_rate=24000):
     """Generate silent MP3 using ffmpeg."""
@@ -281,7 +294,7 @@ def generate_silence(duration, output_path, sample_rate=24000):
         raise subprocess.CalledProcessError(result.returncode, result.args)
 
 
-# ── Concatenate page audio ──────────────────────────────────────────
+# -- Concatenate page audio ------------------------------------------
 
 def concat_page_audio(segment_paths, gap_duration, page_idx, tmp_dir):
     """
@@ -324,7 +337,7 @@ def concat_page_audio(segment_paths, gap_duration, page_idx, tmp_dir):
     return combined, segment_timings
 
 
-# ── Base64 encode ───────────────────────────────────────────────────
+# -- Base64 encode ---------------------------------------------------
 
 def audio_to_base64(path):
     """Read audio file and return base64 data URI string."""
@@ -333,7 +346,15 @@ def audio_to_base64(path):
     return f"data:audio/mp3;base64,{data}"
 
 
-# ── Process all pages ───────────────────────────────────────────────
+def _audio_file_ok(path):
+    """Return True when a TTS output file exists and is not empty."""
+    try:
+        return os.path.isfile(path) and os.path.getsize(path) > 0
+    except OSError:
+        return False
+
+
+# -- Process all pages -----------------------------------------------
 
 def process_pages(pages, voice, tmp_dir, rate="+0%", pitch="+0Hz", tts_engine="edge"):
     """Generate audio + timeline for all pages."""
@@ -356,12 +377,12 @@ def process_pages(pages, voice, tmp_dir, rate="+0%", pitch="+0Hz", tts_engine="e
             })
             continue
 
-        # Fail fast when a TTS segment produced no audio; ffmpeg concat would
-        # otherwise crash later with a confusing "file not found" error.
-        missing = [os.path.basename(p) for p in page_seg_paths if not os.path.isfile(p)]
-        if missing:
+        # Fail fast when a TTS segment produced no usable audio; ffmpeg concat
+        # would otherwise crash later with a confusing error.
+        invalid = [os.path.basename(p) for p in page_seg_paths if not _audio_file_ok(p)]
+        if invalid:
             raise RuntimeError(
-                "TTS generation produced no audio for segment(s): " + ", ".join(missing)
+                "TTS generation produced no audio for segment(s): " + ", ".join(invalid)
             )
 
         # Concatenate audio
@@ -394,7 +415,7 @@ def process_pages(pages, voice, tmp_dir, rate="+0%", pitch="+0Hz", tts_engine="e
     return timeline
 
 
-# ── Inject into HTML ────────────────────────────────────────────────
+# -- Inject into HTML ------------------------------------------------
 
 def inject_into_html(html_path, timeline, output_path):
     """Replace __AUDIO_N__ and __TIMELINE__ placeholders in HTML."""
@@ -427,7 +448,7 @@ def inject_into_html(html_path, timeline, output_path):
     log(f"Final HTML written to: {output_path}")
 
 
-# ── Main ────────────────────────────────────────────────────────────
+# -- Main ------------------------------------------------------------
 
 def main():
     if len(sys.argv) < 2:

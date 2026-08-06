@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-moss_tts_engine.py — MOSS-TTS-Nano wrapper for text-to-ppt-card-video build pipeline.
+moss_tts_engine.py - MOSS-TTS-Nano wrapper for text-to-ppt-card-video build pipeline.
 
 Provides synthesize_moss(text, voice, output_mp3_path) that:
 1. Calls infer_onnx.py via subprocess
@@ -10,12 +10,12 @@ Model downloads use the existing HF_ENDPOINT environment variable. Set
 MOSS_HF_MIRROR=1 to switch to https://hf-mirror.com.
 
 Built-in Chinese voices:
-    Junhao  — male, professional (default)
-    Zhiming — male, warm
-    Weiguo  — male, steady
-    Xiaoyu  — female, gentle
-    Yuewen  — female, clear
-    Lingyu  — female, lively
+    Junhao  - male, professional (default)
+    Zhiming - male, warm
+    Weiguo  - male, steady
+    Xiaoyu  - female, gentle
+    Yuewen  - female, clear
+    Lingyu  - female, lively
 
 Usage as module:
     from moss_tts_engine import synthesize_moss, MOSS_VOICES
@@ -33,9 +33,9 @@ import argparse
 
 from tts_common import MOSS_DEFAULT_VOICE, MOSS_VOICES, find_bin
 
-# ── Path setup ───────────────────────────────────────────────────────
-SKILL_DIR = os.path.dirname(os.path.abspath(__file__))
-MOSS_DIR = os.path.join(SKILL_DIR, "moss-tts-nano")
+# -- Path setup -------------------------------------------------------
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+MOSS_DIR = os.path.join(SCRIPT_DIR, "moss-tts-nano")
 FFMPEG = find_bin("ffmpeg") or "ffmpeg"
 
 
@@ -65,7 +65,7 @@ def synthesize_moss(text, voice, output_mp3_path, verbose=False):
     if not os.path.isfile(infer_script):
         raise RuntimeError(
             f"MOSS-TTS-Nano not found at: {MOSS_DIR}\n"
-            f"Run: python {os.path.join(SKILL_DIR, 'setup_local_tts.py')} --engine moss\n"
+            f"Run: python {os.path.join(SCRIPT_DIR, 'setup_local_tts.py')} --engine moss\n"
             f"Or switch to Edge TTS (set tts_engine to 'edge' in manifest.json)."
         )
 
@@ -128,7 +128,7 @@ def synthesize_moss(text, voice, output_mp3_path, verbose=False):
             os.remove(tmp_wav)
 
 
-# ── CLI entry point ──────────────────────────────────────────────────
+# -- CLI entry point --------------------------------------------------
 
 def main():
     parser = argparse.ArgumentParser(description="MOSS-TTS-Nano synthesis wrapper")

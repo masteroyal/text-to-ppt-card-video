@@ -1,14 +1,14 @@
 """
-cosyvoice_engine.py — Wrapper for CosyVoice TTS inference.
+cosyvoice_engine.py - Wrapper for CosyVoice TTS inference.
 
 Runs under the conda Python 3.10 environment (cosyvoice).
 Called as subprocess from build.py.
 
 Available voices (CosyVoice-300M-SFT built-in speakers):
-    中文女 — female, standard Chinese (default)
-    中文男 — male, standard Chinese
-    英文女 — female, English
-    英文男 — male, English
+    中文女 - female, standard Chinese (default)
+    中文男 - male, standard Chinese
+    英文女 - female, English
+    英文男 - male, English
 
 Usage as module:
     from cosyvoice_engine import synthesize_cosyvoice, COSYVOICE_VOICES
@@ -17,7 +17,7 @@ Usage as module:
 Usage as CLI (single):
     python cosyvoice_engine.py --text "你好" --voice 中文女 --output out.mp3
 
-Usage as CLI (batch — loads model once, processes all segments):
+Usage as CLI (batch - loads model once, processes all segments):
     python cosyvoice_engine.py --batch segments.json --voice 中文女
     # segments.json format: [{"text": "...", "output": "out.mp3"}, ...]
 """
@@ -29,9 +29,9 @@ import argparse
 
 from tts_common import COSYVOICE_DEFAULT_VOICE, COSYVOICE_VOICES, find_bin
 
-# ── Path setup ───────────────────────────────────────────────────────
-SKILL_DIR = os.path.dirname(os.path.abspath(__file__))
-COSYVOICE_DIR = os.path.join(SKILL_DIR, "cosyvoice")
+# -- Path setup -------------------------------------------------------
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+COSYVOICE_DIR = os.path.join(SCRIPT_DIR, "cosyvoice")
 MODEL_DIR = os.path.join(COSYVOICE_DIR, "pretrained_models", "CosyVoice-300M-SFT")
 
 # Add CosyVoice source to path
@@ -40,7 +40,7 @@ sys.path.insert(0, COSYVOICE_DIR)
 
 FFMPEG = find_bin("ffmpeg") or "ffmpeg"
 
-# ── Model singleton ──────────────────────────────────────────────────
+# -- Model singleton --------------------------------------------------
 _model = None
 
 def _get_model():
@@ -49,7 +49,7 @@ def _get_model():
         if not os.path.isdir(MODEL_DIR):
             raise RuntimeError(
                 f"CosyVoice model not found at: {MODEL_DIR}\n"
-                f"Run: python {os.path.join(SKILL_DIR, 'setup_local_tts.py')} --engine cosyvoice\n"
+                f"Run: python {os.path.join(SCRIPT_DIR, 'setup_local_tts.py')} --engine cosyvoice\n"
                 f"Or switch to Edge TTS (set tts_engine to 'edge' in manifest.json)."
             )
         import torch
@@ -58,7 +58,7 @@ def _get_model():
         _model = CosyVoice(MODEL_DIR)
     return _model
 
-# ── Synthesis ────────────────────────────────────────────────────────
+# -- Synthesis --------------------------------------------------------
 
 def synthesize_cosyvoice(text, voice, output_mp3_path, verbose=False):
     """Synthesize speech using CosyVoice and save as MP3."""
@@ -102,7 +102,7 @@ def synthesize_cosyvoice(text, voice, output_mp3_path, verbose=False):
             os.remove(tmp_wav)
 
 
-# ── Batch synthesis ──────────────────────────────────────────────────
+# -- Batch synthesis --------------------------------------------------
 
 def synthesize_batch(segments, voice, verbose=False):
     """Synthesize multiple segments in one model session.
@@ -155,7 +155,7 @@ def synthesize_batch(segments, voice, verbose=False):
     return results
 
 
-# ── CLI entry point ──────────────────────────────────────────────────
+# -- CLI entry point --------------------------------------------------
 
 def main():
     parser = argparse.ArgumentParser(description="CosyVoice TTS synthesis wrapper")

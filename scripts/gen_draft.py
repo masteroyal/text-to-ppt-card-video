@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-gen_draft.py — Generate draft.html with __AUDIO_N__ and __TIMELINE__ placeholders.
+gen_draft.py - Generate draft.html with __AUDIO_N__ and __TIMELINE__ placeholders.
 
 Usage:
     python gen_draft.py <output_dir>
@@ -17,7 +17,7 @@ import sys
 
 from themes import get_theme_css, normalize_theme
 
-# ── Aspect ratio → card dimensions ──
+# -- Aspect ratio -> card dimensions --
 RATIO_DIMS = {
     "3:4":  (600, 800),
     "4:3":  (800, 600),
@@ -185,7 +185,7 @@ def main():
     theme_css = get_theme_css(theme)
     card_w, card_h = RATIO_DIMS.get(aspect_ratio, (600, 800))
 
-    # ── Cover card height: portrait = same as content (uniform for video crop); landscape = slightly taller ──
+    # -- Cover card height: portrait = same as content (uniform for video crop); landscape = slightly taller --
     if card_h > card_w:
         cover_h = card_h  # portrait: unify with content card height for single crop rect
     elif card_w > card_h:
@@ -196,19 +196,19 @@ def main():
     content_h = card_h
     cover_section_h = 210
 
-    # ── Dynamic cover page positions ──
+    # -- Dynamic cover page positions --
     top_offset = max(28, int(cover_h * 0.055))
     hero_top = int(cover_h * 0.35)
     footer_bottom = max(28, int(cover_h * 0.055))
     title_max_w = int(card_w * 0.75)
 
-    # ═══════════════════════════════════════════════════════════
+    # ===========================================================
     # Build HTML
-    # ═══════════════════════════════════════════════════════════
+    # ===========================================================
 
     html_parts = []
 
-    # ── HEAD ──
+    # -- HEAD --
     html_parts.append(f'''<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -216,18 +216,18 @@ def main():
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{esc(title)}</title>
 <style>
-/* ═══ BASE STYLES ═══ */
+/* === BASE STYLES === */
 :root{{--navy:#1b2a4a;--dark:#151f35;--cyan:#00a9f4;--light-cyan:#4fc3f7;--text:#1a1a1a;--gray600:#555;--gray400:#999;--gray200:#e0e0e0;--gray100:#f5f5f5;--white:#fff;--green:#4caf50;--amber:#ffc107;--red:#e53935;--serif:"Noto Serif SC","Source Han Serif SC","Songti SC",Georgia,serif;--sans:"PingFang SC","Noto Sans SC","Microsoft YaHei",Arial,sans-serif}}
 *{{box-sizing:border-box;margin:0;padding:0}}html,body{{min-height:100%}}
 body{{font-family:var(--sans);color:var(--text);-webkit-font-smoothing:antialiased;background:#0a0f1a;overflow:hidden}}
 
-/* ═══ DECK LAYOUT ═══ */
+/* === DECK LAYOUT === */
 .deck{{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;height:100vh;width:100vw}}
 .deck::-webkit-scrollbar{{display:none}}
 .deck{{-ms-overflow-style:none;scrollbar-width:none}}
 .page{{flex:0 0 100vw;height:100vh;display:flex;align-items:center;justify-content:center;scroll-snap-align:center;padding:32px}}
 
-/* ═══ CARD SHELL ═══ */
+/* === CARD SHELL === */
 .card{{position:relative;overflow:hidden;border-radius:6px}}
 .card--cover{{width:{card_w}px;height:{cover_h}px;max-width:calc(100vw - 48px);max-height:calc(100vh - 120px);background:var(--navy);color:#fff;box-shadow:0 24px 48px rgba(15,25,45,.28)}}
 .card--cover::after{{content:"";position:absolute;inset:0;pointer-events:none;border:1px solid rgba(255,255,255,.08)}}
@@ -237,7 +237,7 @@ body{{font-family:var(--sans);color:var(--text);-webkit-font-smoothing:antialias
 .article::-webkit-scrollbar-track{{background:#eef1f5}}
 .article::-webkit-scrollbar-thumb{{background:#9fb4c8;border-radius:6px}}
 
-/* ═══ COVER PAGE ═══ */
+/* === COVER PAGE === */
 .top{{position:absolute;z-index:2;top:{top_offset}px;left:46px;right:46px;display:flex;justify-content:space-between;gap:22px;color:rgba(255,255,255,.62);font-size:12px;line-height:1.7;letter-spacing:.08em}}
 .logo{{font-family:var(--serif);font-size:23px;font-weight:600;line-height:1.35;letter-spacing:.04em}}
 .logo span{{display:block;padding-left:1em;color:rgba(255,255,255,.78);font-weight:400}}
@@ -249,18 +249,18 @@ body{{font-family:var(--sans);color:var(--text);-webkit-font-smoothing:antialias
 .footer{{position:absolute;z-index:2;left:46px;right:46px;bottom:{footer_bottom}px;display:flex;align-items:baseline;justify-content:space-between;gap:18px;border-top:1px solid rgba(255,255,255,.28);padding-top:14px;color:rgba(255,255,255,.48);font-size:11px;line-height:1.5;letter-spacing:.08em}}
 .firm{{font-family:var(--serif);color:rgba(255,255,255,.68);letter-spacing:.12em}}
 
-/* ═══ CONTENT CARD COVER SECTION ═══ */
+/* === CONTENT CARD COVER SECTION === */
 .cover{{min-height:{cover_section_h}px;background:var(--navy);background-image:repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(255,255,255,.035) 39px,rgba(255,255,255,.035) 40px),repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(255,255,255,.035) 39px,rgba(255,255,255,.035) 40px);color:#fff;padding:34px 38px;display:flex;flex-direction:column;justify-content:space-between}}
 .cover .logo{{font-size:20px}}
 .cover h1{{font-family:var(--serif);font-size:34px;line-height:1.18;margin-bottom:12px}}
 .cover .sub{{font-size:17px}}
 .cover .date{{font-size:12px;color:rgba(255,255,255,.58);letter-spacing:.08em}}
 
-/* ═══ BODY AREA ═══ */
+/* === BODY AREA === */
 .body{{padding:20px 34px 24px}}
 .breadcrumb{{text-align:right;font-size:11px;color:var(--gray400);letter-spacing:.08em;margin-bottom:14px}}
 
-/* ═══ COMPONENTS ═══ */
+/* === COMPONENTS === */
 h2{{font-family:var(--serif);font-size:23px;line-height:1.35;margin:18px 0 8px;color:#000}}
 .rule{{height:1px;background:#000;margin-bottom:10px}}
 .exec{{background:var(--gray100);border-left:4px solid var(--cyan);padding:12px 16px;margin:12px 0;border-radius:0 4px 4px 0}}
@@ -269,7 +269,7 @@ p{{font-size:17px;line-height:1.65;color:#333;margin-bottom:12px;font-weight:300
 strong{{color:#000;font-weight:700}}
 .metrics{{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--gray200);margin:12px 0 16px;border-radius:4px;overflow:hidden}}
 .metric{{background:#fff;padding:12px}}
-.metric b{{display:block;font-family:Georgia,serif;font-size:36px;line-height:1;color:var(--cyan);margin-bottom:6px}}
+.metric b{{display:block;font-family:var(--serif);font-size:36px;line-height:1;color:var(--cyan);margin-bottom:6px}}
 .metric span{{display:block;font-size:14px;font-weight:700;color:#000}}
 .metric small{{display:block;font-size:12px;line-height:1.45;color:var(--gray600);margin-top:4px}}
 .table{{border-top:1px solid #000;border-bottom:1px solid #000;margin:12px 0 16px}}
@@ -283,7 +283,7 @@ ul{{margin:4px 0 14px 18px}}
 li{{font-size:16px;line-height:1.55;color:#333;margin-bottom:8px;font-weight:300}}
 .source{{margin-top:16px;padding-top:8px;border-top:1px solid var(--gray200);display:flex;justify-content:space-between;font-size:10px;color:var(--gray400);letter-spacing:.08em}}
 
-/* ═══ ANIMATION (timeline-driven) ═══ */
+/* === ANIMATION (timeline-driven) === */
 .cover > *,.body > .breadcrumb,.body > h2,.body > .rule,.body > .exec,.body > p,.body > ul,.body > .table,.body > blockquote,.body > .source,.body > .metrics,.body > .grid,#cover-label,#cover-title,#cover-subtitle,#cover-tags,#cover-footer{{opacity:0;transform:translateY(20px);transition:opacity .75s cubic-bezier(.22,1,.36,1),transform .75s cubic-bezier(.22,1,.36,1)}}
 .cover > *.visible,.body > .breadcrumb.visible,.body > h2.visible,.body > .rule.visible,.body > .exec.visible,.body > p.visible,.body > ul.visible,.body > .table.visible,.body > blockquote.visible,.body > .source.visible,.body > .metrics.visible,.body > .grid.visible,#cover-label.visible,#cover-title.visible,#cover-subtitle.visible,#cover-tags.visible,#cover-footer.visible{{opacity:1!important;transform:translateY(0)!important}}
 .card--content .cover>*{{opacity:1!important;transform:none!important}}
@@ -299,7 +299,7 @@ li{{font-size:16px;line-height:1.55;color:#333;margin-bottom:8px;font-weight:300
 @keyframes slideFromLeft{{from{{opacity:0;transform:translateX(-40px)}}to{{opacity:1;transform:translateX(0)}}}}
 @keyframes slideFromRight{{from{{opacity:0;transform:translateX(40px)}}to{{opacity:1;transform:translateX(0)}}}}
 
-/* ═══ CONTROLS ═══ */
+/* === CONTROLS === */
 .controls{{position:fixed;bottom:0;left:0;right:0;z-index:1000;display:flex;align-items:center;gap:12px;padding:12px 24px;background:rgba(0,0,0,.78);backdrop-filter:blur(12px)}}
 .ctrl-btn{{width:36px;height:36px;border:none;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;flex-shrink:0}}
 .ctrl-btn:hover{{background:rgba(255,255,255,.3)}}
@@ -309,12 +309,12 @@ li{{font-size:16px;line-height:1.55;color:#333;margin-bottom:8px;font-weight:300
 .progress-fill{{height:100%;width:0;background:#fff;border-radius:2px;transition:width .1s linear}}
 .page-indicator{{color:rgba(255,255,255,.6);font-size:12px;font-family:monospace;min-width:50px;text-align:right}}
 
-/* ═══ DOT NAVIGATION ═══ */
+/* === DOT NAVIGATION === */
 .dots{{position:fixed;bottom:60px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:1001}}
 .dots button{{width:8px;height:8px;border-radius:50%;border:1px solid rgba(255,255,255,.4);background:rgba(255,255,255,.2);cursor:pointer;transition:all .3s;padding:0}}
 .dots button.active{{background:#fff;transform:scale(1.3)}}
 
-/* ═══ RESPONSIVE ═══ */
+/* === RESPONSIVE === */
 @media(max-width:650px){{.page{{padding:8px}}.card--cover,.card--content{{width:100%;height:auto;max-height:none;aspect-ratio:{card_w}/{cover_h}}}.card--content{{aspect-ratio:{card_w}/{content_h}}}.article{{height:auto;overflow:visible}}.cover{{min-height:200px}}h2{{font-size:21px}}p,li{{font-size:15px}}}}
 @media(prefers-reduced-motion:reduce){{*{{animation:none!important;transition:none!important;opacity:1!important;transform:none!important}}}}
 {theme_css}
@@ -324,7 +324,7 @@ li{{font-size:16px;line-height:1.55;color:#333;margin-bottom:8px;font-weight:300
 <div class="deck" id="deck">
 ''')
 
-    # ── PAGES ──
+    # -- PAGES --
     for i, page in enumerate(pages):
         meta = (page.get("meta") or []) + ["", ""]
         if page["type"] == "cover":
@@ -422,7 +422,7 @@ li{{font-size:16px;line-height:1.55;color:#333;margin-bottom:8px;font-weight:300
   </div>
 ''')
 
-    # ── CLOSE DECK + DOTS + CONTROLS + AUDIO ──
+    # -- CLOSE DECK + DOTS + CONTROLS + AUDIO --
     audio_src_items = ",\n      ".join([f'"__AUDIO_{i}__"' for i in range(num_pages)])
 
     html_parts.append(f'''</div>
@@ -432,9 +432,9 @@ li{{font-size:16px;line-height:1.55;color:#333;margin-bottom:8px;font-weight:300
 
 <!-- Playback controls -->
 <div class="controls" id="controls">
-  <button id="btnPrev" class="ctrl-btn">&#9664;</button>
-  <button id="btnPlay" class="ctrl-btn play">&#9654;</button>
-  <button id="btnNext" class="ctrl-btn">&#9654;</button>
+  <button id="btnPrev" class="ctrl-btn" aria-label="上一页">&#9664;</button>
+  <button id="btnPlay" class="ctrl-btn play" aria-label="播放或暂停">&#9654;</button>
+  <button id="btnNext" class="ctrl-btn" aria-label="下一页">&#9654;</button>
   <div class="progress-wrap" id="progressWrap">
     <div class="progress-fill" id="progressFill"></div>
   </div>
@@ -621,12 +621,12 @@ var AUDIO_SRC = [
     btnNext.disabled = currentPage === totalPages - 1;
   }}
 
-  /* ── Dot navigation ── */
+  /* -- Dot navigation -- */
   function buildDots() {{
     if (!dotsContainer) return;
     pages.forEach(function(_, i) {{
       var btn = document.createElement('button');
-      btn.setAttribute('aria-label', 'Page ' + (i + 1));
+      btn.setAttribute('aria-label', '第 ' + (i + 1) + ' 页');
       btn.addEventListener('click', function() {{ goTo(i); }});
       dotsContainer.appendChild(btn);
     }});
@@ -638,7 +638,7 @@ var AUDIO_SRC = [
     }});
   }}
 
-  /* ── Scroll sync ── */
+  /* -- Scroll sync -- */
   var scrollTimer;
   deck.addEventListener('scroll', function() {{
     clearTimeout(scrollTimer);
@@ -659,7 +659,7 @@ var AUDIO_SRC = [
     }}, 120);
   }});
 
-  /* ── Events ── */
+  /* -- Events -- */
   btnPlay.addEventListener('click', toggle);
   btnPrev.addEventListener('click', function() {{ goTo(currentPage - 1); }});
   btnNext.addEventListener('click', function() {{ goTo(currentPage + 1); }});
@@ -679,7 +679,7 @@ var AUDIO_SRC = [
     if (e.key === 'End') {{ e.preventDefault(); goTo(totalPages - 1); }}
   }});
 
-  /* ── Init ── */
+  /* -- Init -- */
   initElements();
   autoFitArticles();
   buildDots();
@@ -706,7 +706,7 @@ var AUDIO_SRC = [
 </body>
 </html>''')
 
-    # ── Write draft.html ──
+    # -- Write draft.html --
     html_content = "\n".join(html_parts)
     draft_path = os.path.join(out, "draft.html")
     with open(draft_path, "w", encoding="utf-8") as f:

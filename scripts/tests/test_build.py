@@ -1,3 +1,4 @@
+import asyncio
 import os
 import sys
 import tempfile
@@ -89,6 +90,36 @@ class BuildTest(unittest.TestCase):
                         "YunxiNeural",
                         tmp,
                     )
+
+    def test_process_pages_fails_fast_on_empty_audio(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            empty_path = os.path.join(tmp, "seg_0_0.mp3")
+            with open(empty_path, "w", encoding="utf-8") as f:
+                f.write("")
+
+            async def fake_generate(*args, **kwargs):
+                return [[empty_path]]
+
+            with mock.patch("build.generate_all_segments", side_effect=fake_generate):
+                with self.assertRaisesRegex(RuntimeError, "no audio"):
+                    build.process_pages(
+                        [{"title": "P", "narration": [{"text": "hi", "elements": []}]}],
+                        "YunxiNeural",
+                        tmp,
+                    )
+
+    def test_generate_all_segments_fails_on_tts_error(self):
+        async def fake_tts(*args, **kwargs):
+            raise RuntimeError("tts unavailable")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            with mock.patch("build.generate_tts", side_effect=fake_tts):
+                with self.assertRaisesRegex(RuntimeError, "TTS segments failed"):
+                    asyncio.run(build.generate_all_segments(
+                        [{"title": "P", "narration": [{"text": "hi", "elements": []}]}],
+                        "YunxiNeural",
+                        tmp,
+                    ))
 
     def test_no_narration_page_gets_static_duration(self):
         async def fake_generate(*args, **kwargs):
