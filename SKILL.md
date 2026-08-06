@@ -4,7 +4,7 @@ description: >-
   把文本变成带旁白和动画的 PPT 卡片演示，可输出单文件 HTML，也可导出 MP4。
   支持 12 套 lieflat 主题和 Edge TTS、MOSS-TTS-Nano、CosyVoice、DashScope
   四种 TTS 引擎。用户需要生成演示文稿、卡片视频或带旁白的 HTML 时使用。
-version: 3.4.2
+version: 1.0.0
 ---
 
 # text-to-ppt-card-video

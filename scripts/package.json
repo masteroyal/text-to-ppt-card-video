@@ -1,6 +1,6 @@
 {
   "name": "text-to-ppt-card-video-scripts",
-  "version": "3.4.2",
+  "version": "1.0.0",
   "description": "Text-to-PPT-Card-Video build pipeline scripts",
   "main": "record_video.js",
   "engines": {
